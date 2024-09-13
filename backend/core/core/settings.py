@@ -12,17 +12,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import environ
+import os
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+env = environ.Env()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+environ.Env.read_env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -30,9 +28,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
+
+AUTH_USER_MODEL = 'account.User'
 
 
 # Application definition
@@ -47,14 +47,16 @@ DEFAULT_APPS = [
 ]
 
 DJANGO_APPS = [
- 'account'
+ 'account',
+ 'artist'
 ]
 
 THIRD_PARTY_APPS = [
  'rest_framework',
+ 'rest_framework.authtoken'
 ]
 
-INSTALLED_APPS = DJANGO_APPS + DEFAULT_APPS
+INSTALLED_APPS = DJANGO_APPS + DEFAULT_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
