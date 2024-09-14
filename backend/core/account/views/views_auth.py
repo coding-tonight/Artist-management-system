@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework import status
 
 from account.serializers import LoginSerializer, RegisterSerializer
@@ -40,6 +40,10 @@ class LoginApiView(APIView):
             }
             return Response(response, status=status.HTTP_200_OK)
         
+        except ValidationError as exe:
+            logger.error(str(exe), exc_info=True)
+            return Response({'error': exe.detail }, status=status.HTTP_400_BAD_REQUEST)
+            
         except APIException as exe:
             logger.error(str(exe), exc_info=True)
             raise APIException(exe.detail)
