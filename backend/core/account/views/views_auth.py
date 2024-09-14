@@ -12,7 +12,6 @@ from rest_framework.exceptions import APIException
 from rest_framework import status
 
 from account.serializers import LoginSerializer, RegisterSerializer
-from core.common.db_connection import insert_data_to_db
 from core.common.globalResponses import LOGIN_MESSAGE_JSON, BODY_NOT_BLANK_JSON
 
 

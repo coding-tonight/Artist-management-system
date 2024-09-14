@@ -5,7 +5,7 @@ from account.models import BaseModel, GenderChoices
 # Create your models here.
 
 class Artist(BaseModel):
-    name = models.CharField(max_length=45)
+    name = models.CharField(max_length=45, unique=True)
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(choices=GenderChoices, max_length=10)
     address = models.CharField(max_length=120)

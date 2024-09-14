@@ -11,7 +11,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 class BaseModel(models.Model):
     # uuid = models.UUIDField(unique=True, default=generate_uuid)
     created_at = models.DateTimeField(auto_created=False)
-    updated_at = models.DateTimeField(auto_created=False)
+    updated_at = models.DateTimeField(auto_created=False, null=True)
 
     class Meta:
         abstract = True

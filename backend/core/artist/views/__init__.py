@@ -1,0 +1,1 @@
+from artist.views.views_artist import *

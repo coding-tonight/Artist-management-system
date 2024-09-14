@@ -13,11 +13,10 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
-def insert_data_to_db(query, param):
+def insert_query_to_db(query, param)->None:
     try:
         with connection.cursor() as cursor:
             cursor.execute(query, param)
-            return cursor.fetchone()
             
     except (IntegrityError, DatabaseError, Exception) as exe:
         raise APIException(exe)
