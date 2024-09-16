@@ -35,5 +35,43 @@ class ArtistSerializer(serializers.Serializer):
                   data.get('no_of_albums_released'), datetime.now()]
         
         return params
+    
+
+class SongSerializer(serializers.Serializer):
+    id = serializers.PrimaryKeyRelatedField(read_only=True)
+    artist = serializers.PrimaryKeyRelatedField()
+    title = serializers.CharField()
+    album_name = serializers.CharField()
+    genre =serializers.CharField()
+    
+    def validate(self, data):
+        title = data.get('title')
+        album_name = data.get('album_name')
+        
+        pk = self.context.get('pk')
+        if pk:
+            if not Song.objects.filter(id=pk).exists():
+                raise NotFound('Artist does not exists')
+            
+            if Song.objects.filter(name__iexact=title).exclude(id=pk).exists():
+                raise serializers.ValidationError(f'{title} title is already taken.')
+            
+            if Song.objects.filter(album_name__iexact=album_name).exclude(id=pk).exists():
+                raise serializers.ValidationError(f"{album_name} album name is already taken")
+        else:
+            if Song.objects.filter(name__iexact=title).exists():
+                raise serializers.ValidationError(f'{album_name} album name is already taken.')
+            
+        
+        artist = data.get('artist')
+        if not Artist.objects.filter(id=artist).exists():
+            raise serializers.ValidationError('Artist is not available or does not exists')
+        
+        genre  = data.get('genre')
+        params = [title, artist, album_name, genre, datetime.now()]
+        
+        return params
+        
+    
         
     

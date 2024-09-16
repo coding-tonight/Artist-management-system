@@ -42,7 +42,7 @@ class LoginApiView(APIView):
         
         except ValidationError as exe:
             logger.error(str(exe), exc_info=True)
-            return Response({'error': exe.detail }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Invalid', 'errors': exe.detail }, status=status.HTTP_400_BAD_REQUEST)
             
         except APIException as exe:
             logger.error(str(exe), exc_info=True)
