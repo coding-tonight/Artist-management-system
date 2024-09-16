@@ -1,7 +1,7 @@
+import { useToken } from "@/hooks";
 import axios from "axios";
 
 
-console.log(import.meta.env.VITE_API_URL)
 export const API = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     timeout: 1000,
@@ -12,6 +12,11 @@ export const API = axios.create({
 
 
 API.interceptors.request.use((config) => {
+   const token = useToken()
+
+   if(!token) return config
+   
+    config.headers.Authorization = `token ${token}`
     return config;
   }, (error) => {
     return Promise.reject(error);

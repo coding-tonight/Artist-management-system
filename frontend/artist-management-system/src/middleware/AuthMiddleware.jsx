@@ -1,5 +1,7 @@
 import { Outlet , Navigate } from "react-router-dom"
 
+import { useToken } from "@/hooks"
+
 /**
  *  AuthMiddleware 
  * @if  user is authenticated then redirect to protected routes 
@@ -8,9 +10,9 @@ import { Outlet , Navigate } from "react-router-dom"
  */
 
 const AuthMiddleware = () => {
-    const status = true
+    const token = useToken()
 
-   if(status) return <Navigate to="/login"  replace />
+   if(!token) return <Navigate to="/login"  replace />
 
    return <Outlet />
 }

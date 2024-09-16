@@ -1,11 +1,11 @@
 import { useLocation } from "react-router-dom"
+import { Toaster } from "@/components/ui/toaster"
 
 import Login from "./Login"
 
 const AuthBase = () => {
     const location = useLocation()
-    console.log(location.pathname)
-
+    
     const switchAuthComponent = () => {
         switch(location.pathname) {
             case '/login':
@@ -20,6 +20,7 @@ const AuthBase = () => {
     }
     return (
         <section className="h-[100vh] flex justify-center items-center">
+            <Toaster />
            {switchAuthComponent()}
         </section>
     )

@@ -1,11 +1,18 @@
+import { useToken } from "@/hooks"
 import { Outlet , Navigate } from "react-router-dom"
 
-const AuthMiddleware = () => {
-    const status = true
+/**
+ * GuestMiddleware
+ * @if user is authenticated then redirect to dashboard
+ * @else to login page
+ * @returns 
+ */
 
-   if(status) return <Navigate to="/login"  replace />
+const GuestMiddleware = () => {
+   const token = useToken()
 
-   return <Outlet />
+   if(!token) return <Outlet />
+   return <Navigate to="/"  replace />
 }
 
-export default AuthMiddleware
+export default GuestMiddleware

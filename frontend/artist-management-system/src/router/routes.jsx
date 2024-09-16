@@ -1,30 +1,39 @@
+import React from "react";
+
 import {
     createBrowserRouter,
   } from "react-router-dom";
 
-import { DashboardLayout } from "@/layouts";
-import { AuthMiddleware } from "@/middleware";
+import { AuthMiddleware, GuestMiddleware } from "@/middleware";
 
 import Dashboard from "@/pages/Dashboard";
 import AuthBase from "@/pages/Auth/AuthBase";
+import { DashboardLayout } from "@/layouts";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: (
-                  <AuthMiddleware>
-                    <DashboardLayout />
-                  </AuthMiddleware>
-                ),
+        element: <AuthMiddleware />,
         children: [
             {
-                path: "/",
-                element: <Dashboard />,
+                element: <DashboardLayout />,
+                children: [
+                  {
+                    index: true ,
+                    element: <Dashboard />
+                  }
+                ]
             },
         ]
     },
     {
-        path: "/login",
-        element: <AuthBase />,
+        path: "/",
+        element: <GuestMiddleware />,
+        children: [
+        {
+          path: 'login',
+          element: <AuthBase />,
+        }, 
+      ]
     },
   ])
