@@ -9,6 +9,7 @@ from rest_framework.exceptions import  APIException
 
 from artist.serializers import ArtistSerializer, SongSerializer
 from account.permissions import  SuperAdminRole
+from core.pagination import RawQueriesPagination
 from core.common.globalResponses import BODY_NOT_BLANK_JSON
 from core.common.db_connection import fetch_data_from_db, insert_query_to_db
 
@@ -17,17 +18,27 @@ logger = logging.getLogger('django')
 
 
 __all__ = [
-    'ArtistApiView'
+    'ArtistApiView',
+    'SongApiView'
 ]
 
 class ArtistApiView(APIView):
     permission_classes = [SuperAdminRole, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
+    pagination_class = RawQueriesPagination
     
     def get(self, request, format=None):
-         query = 'SELECT * FROM artist ORDER BY name  LIMIT %s OFFSET %s'
-         data = fetch_data_from_db(query, [10, 0])
-         return Response({'message': 'success', 'data': data}, status=status.HTTP_200_OK)
+        
+         paginator = self.pagination_class()
+         limit = paginator.get_limit(request)
+         offset = paginator.get_offset(request)
+         
+         query = 'SELECT * FROM artist ORDER BY name, id DESC  LIMIT %s OFFSET %s'
+         data = fetch_data_from_db(query, [limit, offset])
+         paginated_data =  paginator.paginate_queryset(data, request)
+         return Response({'message': 'success',
+                           'data': paginator.get_paginated_response(paginated_data).data
+                          }, status=status.HTTP_200_OK)
      
      
     def post(self, request, format=None):

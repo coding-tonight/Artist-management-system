@@ -39,7 +39,7 @@ class ArtistSerializer(serializers.Serializer):
 
 class SongSerializer(serializers.Serializer):
     id = serializers.PrimaryKeyRelatedField(read_only=True)
-    artist = serializers.PrimaryKeyRelatedField()
+    artist = ArtistSerializer() 
     title = serializers.CharField()
     album_name = serializers.CharField()
     genre =serializers.CharField()

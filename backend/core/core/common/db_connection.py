@@ -13,6 +13,16 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+def get_total_count(query, param):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, param)
+            return cursor.fetchone()[0]
+            
+    except (IntegrityError, DatabaseError, Exception) as exe:
+        raise APIException(exe)
+
+
 def insert_query_to_db(query, param)->None:
     try:
         with connection.cursor() as cursor:
