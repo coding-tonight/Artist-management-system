@@ -1,4 +1,5 @@
 import logging
+import math
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -31,14 +32,17 @@ class ArtistApiView(APIView):
         
          paginator = self.pagination_class()
          limit = paginator.get_limit(request)
-         offset = paginator.get_offset(request)
+         page_number = request.query_params.get('page') or 1
          
          query = 'SELECT * FROM artist ORDER BY name, id DESC  LIMIT %s OFFSET %s'
-         data = fetch_data_from_db(query, [limit, offset])
-         paginated_data =  paginator.paginate_queryset(data, request)
+         data = fetch_data_from_db(query, [limit, (int(page_number) - 1) * limit])
+         
+         total_page , total = paginator.page_size('SELECT COUNT(*) FROM artist')
+         
          return Response({'message': 'success',
-                           'data': paginator.get_paginated_response(paginated_data).data
-                          }, status=status.HTTP_200_OK)
+                          'total_page': total_page,
+                          'total': total,
+                          'current_page': page_number, 'data': data }, status=status.HTTP_200_OK)
      
      
     def post(self, request, format=None):
@@ -111,11 +115,27 @@ class ArtistApiView(APIView):
 class SongApiView(APIView):
     permission_classes = [SuperAdminRole, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
+    pagination_class = RawQueriesPagination
     
-    def get(self, request, pk, format=None):
-         query = 'SELECT * FROM song where artist_id = %s'
-         data = fetch_data_from_db(query, [pk])
-         return Response({'message': 'success', 'data': data}, status=status.HTTP_200_OK)
+    def get(self, request, format=None):
+         paginator = self.pagination_class()
+         limit = paginator.get_limit(request)
+         page_number = request.query_params.get('page') or 1
+         
+         query = '''SELECT 
+                      song.id, song.genre, song.title, song.album_name , artist.name as artist_name 
+                    FROM song 
+                      inner join artist on song.artist_id = artist.id 
+                    ORDER BY song.id, song.title 
+                    LIMIT %s OFFSET %s 
+                 '''
+                    
+         data = fetch_data_from_db(query, [limit, (int(page_number) - 1) * limit])
+         total_page , total = paginator.page_size('SELECT COUNT(*) FROM song')
+         return Response({'message': 'success',
+                          'total_page': total_page,
+                          'total': total,
+                          'current_page': page_number, 'data': data }, status=status.HTTP_200_OK)
      
     
     def post(self, request, format=None):
