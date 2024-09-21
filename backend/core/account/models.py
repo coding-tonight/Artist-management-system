@@ -1,4 +1,5 @@
 # import uuid
+from enum import Enum
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -50,18 +51,22 @@ class CustomUserManger(BaseUserManager):
     def natural_key(self, email):
         return self.get(email=email)
 
-class GenderChoices(models.TextChoices):
+class GenderChoices(Enum):
     MALE = 'M'
     FEMALE = 'F'
     OTHER = 'O'
-
+    
+    @classmethod
+    def has_key(cls, name):
+        return name in cls.__members__
+        
 class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=12)
     dob = models.DateField(null=True, blank=True, auto_now=False)
-    gender = models.CharField(choices=GenderChoices, max_length=10)
+    gender = models.CharField(choices=GenderChoices.__members__, max_length=10)
     address = models.CharField(max_length=120, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)  
     updated_at = models.DateTimeField(auto_created=False, null=True)

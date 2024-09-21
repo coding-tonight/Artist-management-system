@@ -8,5 +8,7 @@ urlpatterns = [
     path('artist/<str:pk>/', views.ArtistApiView.as_view(), name='update_artist'),
     path('artist/<str:pk>/', views.ArtistApiView.as_view(), name='delete_artist'),
     
+    path('artist/record/<str:pk>/', views.ArtistSongApiView.as_view(), name='get_artist_record'),
+    
     path('song/', views.SongApiView.as_view(), name='artist'),
 ]

@@ -13,6 +13,8 @@ from rest_framework import status
 
 from account.serializers import LoginSerializer, RegisterSerializer
 from core.common.globalResponses import LOGIN_MESSAGE_JSON, BODY_NOT_BLANK_JSON
+from core.common.db_connection import insert_query_to_db
+
 
 
 logger = logging.getLogger('django')
@@ -70,8 +72,19 @@ class RegisterApiView(APIView):
 
             serializer = RegisterSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.save(created_at=datetime.now())
+            validated_data = serializer.validated_data
+            query = '''INSERT INTO account_user 
+                        ( email, password, first_name, last_name, phone, gender, dob, role,
+                        address, is_superuser, created_at ) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                  '''
+                  
+            insert_query_to_db(query, validated_data)
             return Response({'message': 'success'}, status=status.HTTP_200_OK)
+        
+        except ValidationError as exe:
+            logger.error(str(exe), exc_info=True)
+            return Response({'message': 'Invalid', 'errors': exe.detail }, status=status.HTTP_400_BAD_REQUEST)
     
         except APIException as exe:
             logger.error(str(exe), exc_info=True)

@@ -3,7 +3,7 @@ from datetime import datetime
 from rest_framework import serializers
 from rest_framework.exceptions import  NotFound
 
-from .models import Artist, Song
+from .models import Artist, Song, GenderChoices
 
 class ArtistSerializer(serializers.Serializer):
     id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -29,10 +29,20 @@ class ArtistSerializer(serializers.Serializer):
         else:
             if Artist.objects.filter(name__iexact=name).exists():
                 raise serializers.ValidationError(f'{name} name is already taken.')
+            
         
-        params = [name, data.get('dob'), data.get('gender'), 
+        no_of_albums_released = data.get('no_of_albums_released')
+        if int(no_of_albums_released) < 0:
+            raise serializers.ValidationError('Number  of albums released can not be negative') 
+        
+        gender_key = data.get('gender')
+        if not GenderChoices.has_key(gender_key):
+              raise serializers.ValidationError('Invalid gender option')
+        gender = GenderChoices[gender].value
+        
+        params = [name, data.get('dob'), gender, 
                   data.get('address'), data.get('first_release_year'),
-                  data.get('no_of_albums_released'), datetime.now()]
+                  no_of_albums_released, datetime.now()]
         
         return params
     
@@ -67,7 +77,11 @@ class SongSerializer(serializers.Serializer):
         if not Artist.objects.filter(id=artist).exists():
             raise serializers.ValidationError('Artist is not available or does not exists')
         
-        genre  = data.get('genre')
+        genre_key  = data.get('genre')
+        if not Song.GenreChoices.has_key(genre_key):
+            raise serializers.ValidationError('Invalid genre')
+        genre = Song.GenreChoices[genre_key].value
+        
         params = [title, artist, album_name, genre, datetime.now()]
         
         return params

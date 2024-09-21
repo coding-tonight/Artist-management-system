@@ -1,7 +1,7 @@
 import logging
-import math
 
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import  IsAuthenticated
@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import  APIException
 
 from artist.serializers import ArtistSerializer, SongSerializer
-from account.permissions import  SuperAdminRole
+from account.permissions import  SuperAdminRole, ArtistManagerRole, ArtistRole
 from core.pagination import RawQueriesPagination
 from core.common.globalResponses import BODY_NOT_BLANK_JSON
 from core.common.db_connection import fetch_data_from_db, insert_query_to_db
@@ -20,7 +20,8 @@ logger = logging.getLogger('django')
 
 __all__ = [
     'ArtistApiView',
-    'SongApiView'
+    'SongApiView',
+    'ArtistSongApiView'
 ]
 
 class ArtistApiView(APIView):
@@ -109,8 +110,6 @@ class ArtistApiView(APIView):
             logger.error(str(exe), exc_info=True)
             raise APIException(exe.detail)
         
-            
-    
     
 class SongApiView(APIView):
     permission_classes = [SuperAdminRole, IsAuthenticated]
@@ -199,8 +198,43 @@ class SongApiView(APIView):
             logger.error(str(exe), exc_info=True)
             raise APIException(exe.detail)
         
+
+
+class ArtistSongApiView(generics.ListAPIView):
+    permission_classes = [SuperAdminRole, ArtistRole, ArtistManagerRole, IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    pagination_class = RawQueriesPagination
     
-    
+    def list(self, request, pk, *args, **kwargs):
+        try:
+            paginator = self.pagination_class()
+            limit = paginator.get_limit(request)
+            page_number = request.query_params.get('page') or 1
+            
+            query = '''SELECT 
+                         id, title, album_name, genre
+                        FROM song  WHERE artist_id = %s
+                        ORDER BY  id, title 
+                        LIMIT %s OFFSET %s 
+                    '''
+                    
+            data = fetch_data_from_db(query, [pk, limit, (int(page_number) - 1) * limit])
+            total_page , total = paginator.page_size('SELECT COUNT(*) FROM song WHERE artist_id = {}'.format(str(pk)))
+            return Response({'message': 'success',
+                            'total_page': total_page,
+                            'total': total,
+                            'current_page': page_number, 'data': data }, status=status.HTTP_200_OK)
+            
+        except APIException as exe:
+            logger.error(str(exe), exc_info=True)
+            raise APIException(exe)
+            
+         
+        
+          
+                 
+        
+         
 
 
      

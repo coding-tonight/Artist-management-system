@@ -1,9 +1,13 @@
 import re
+from  datetime import datetime
 
-from django.contrib.auth import  authenticate
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 
 from rest_framework import serializers
 from account.models import User, GenderChoices
+
+from core.common.db_connection import insert_query_to_db
 
 
 class LoginSerializer(serializers.Serializer):
@@ -24,7 +28,6 @@ class LoginSerializer(serializers.Serializer):
         return data
     
     
-
 class RegisterSerializer(serializers.Serializer):
       first_name = serializers.CharField()
       last_name = serializers.CharField()
@@ -52,22 +55,18 @@ class RegisterSerializer(serializers.Serializer):
           confirm_password = data.get('confirm_password')
           if password != confirm_password:
               raise serializers.ValidationError('Password does not match with confirm password')
+          password = make_password(password)
+          print(password, type(password))
           
-        #   gender = data.get('gender')
-          
-        #   if not gender in GenderChoices:
-        #       raise serializers.ValidationError('InValid gender option')
-          
-        #   data['gender'] = GenderChoices[gender]
-              
-          return data
+          gender_key = data.get('gender')
+          if not GenderChoices.has_key(gender_key.upper()):
+              raise serializers.ValidationError('Invalid gender option')
+          data['gender'] = GenderChoices[gender_key].value
+                    
+          params = [email, password, data.get('first_name'),
+            data.get('last_name'), data.get('phone'), data.get('gender'),
+            data.get('dob'), 'artist', data.get('address'), False , datetime.now()]
+ 
+          return params
       
-      def create(self, validated_data):
-          # remove the confirm password field
-          validated_data.pop('confirm_password')
-          
-          email = validated_data.pop('email')
-          password = validated_data.pop('password')
-          user = User.objects.create_user(email=email, password=password, **validated_data)
-          return user
           
