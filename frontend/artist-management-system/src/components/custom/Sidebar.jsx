@@ -21,9 +21,10 @@ const Sidebar = () => {
                       <User className="h-[20px]" /> Artists
                     </Link>
                 </li>
+                
                 <li>
-                    <Link className="sidebar-icon text-sm">
-                       <Music4 className="h-[20px]" /> Songs  
+                    <Link className="sidebar-icon text-sm" to="record/">
+                       <Music4 className="h-[20px]" /> Records
                     </Link>
                 </li>
               </ul>

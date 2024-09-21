@@ -84,7 +84,7 @@ const Login = () => {
                     <Button size="lg" className="w-[100%]" disable={loading ? 'true': 'false'}>{loading ? 'loading...': 'Sign In'}</Button>
 
                     <div className="flex justify-end">
-                        <Link className="text-sm underline">Don&#39;t have an account ? sign up</Link>
+                        <Link className="text-sm underline" to='/register'>Don&#39;t have an account ? sign up</Link>
                     </div>
                 </CardFooter>
                     </form>

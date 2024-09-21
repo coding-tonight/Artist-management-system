@@ -9,6 +9,7 @@ import { AuthMiddleware, GuestMiddleware } from "@/middleware";
 import Dashboard from "@/pages/Dashboard";
 import AuthBase from "@/pages/Auth/AuthBase";
 import { DashboardLayout } from "@/layouts";
+import Record from "@/pages/Record/Record";
 
 export const router = createBrowserRouter([
     {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
                   {
                     index: true ,
                     element: <Dashboard />
+                  },
+                  {
+                    path: 'record/' ,
+                    element: <Record />
                   }
                 ]
             },
@@ -32,6 +37,10 @@ export const router = createBrowserRouter([
         children: [
         {
           path: 'login',
+          element: <AuthBase />,
+        }, 
+        {
+          path: 'register',
           element: <AuthBase />,
         }, 
       ]

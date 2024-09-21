@@ -1,7 +1,11 @@
-import { useLocation } from "react-router-dom"
-import { Toaster } from "@/components/ui/toaster"
+import React from 'react'
+
+import { useLocation } from 'react-router-dom'
+import { Toaster } from '@/components/ui/toaster'
 
 import Login from "./Login"
+import Register from './Register'
+
 
 const AuthBase = () => {
     const location = useLocation()
@@ -12,7 +16,7 @@ const AuthBase = () => {
                 return <Login />
 
             case '/register':
-                return <Login />
+                return <Register />
 
             default:
                return <Login />
