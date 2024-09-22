@@ -2,7 +2,7 @@ import React from "react"
 
 import { Link } from "react-router-dom"
 
-import { Music4, LayoutDashboard , User } from "lucide-react"
+import { Music4, LayoutDashboard , User , User2 } from "lucide-react"
 
 const Sidebar = () => {
     return (
@@ -16,15 +16,22 @@ const Sidebar = () => {
                       <LayoutDashboard className="h-[20px]" /> Dashboard  
                     </Link>
                 </li>
+
                 <li>
-                    <Link className="sidebar-icon text-sm">
+                    <Link className="sidebar-icon text-sm" to='/users'>
+                      <User2 className="h-[20px]" /> Users
+                    </Link>
+                </li>
+
+                <li>
+                    <Link className="sidebar-icon text-sm" to='/artists'>
                       <User className="h-[20px]" /> Artists
                     </Link>
                 </li>
                 
                 <li>
-                    <Link className="sidebar-icon text-sm" to="record/">
-                       <Music4 className="h-[20px]" /> Records
+                    <Link className="sidebar-icon text-sm" to="/song">
+                       <Music4 className="h-[20px]" /> Songs
                     </Link>
                 </li>
               </ul>

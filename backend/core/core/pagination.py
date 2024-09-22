@@ -5,7 +5,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from core.common.db_connection import get_total_count
 
 class RawQueriesPagination(LimitOffsetPagination):
-    default_limit = 1
+    default_limit = 10
     max_limit = 50
     
     def get_total(self, query):

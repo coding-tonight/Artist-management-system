@@ -58,7 +58,7 @@ class GenderChoices(Enum):
     
     @classmethod
     def has_key(cls, name):
-        return name in cls.__members__
+        return name in cls.__members__.values().__str__()
         
 class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=45)
@@ -74,12 +74,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ['phone']
 
-    class Role(models.TextChoices):
+    class Role(Enum):
         SUPER_ADMIN= "super_admin"
         ARTIST_MANAGER = "artist_manager"
         ARTIST = "artist"
+        
+        @classmethod
+        def has_key(cls, name):
+          return name in cls.__members__.values().__str__()
+        
 
-    role = models.CharField(choices=Role, default=Role.ARTIST)
+    role = models.CharField(choices=Role.__members__, default=Role.ARTIST)
 
     objects = CustomUserManger()
 

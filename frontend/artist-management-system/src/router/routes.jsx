@@ -9,7 +9,15 @@ import { AuthMiddleware, GuestMiddleware } from "@/middleware";
 import Dashboard from "@/pages/Dashboard";
 import AuthBase from "@/pages/Auth/AuthBase";
 import { DashboardLayout } from "@/layouts";
-import Record from "@/pages/Record/Record";
+
+import SongCreate from "@/pages/Song/SongCreate";
+import Song from "@/pages/Song/Song";
+import Artist from "@/pages/Artists";
+import ArtistCreate from "@/pages/Artists/ArtistCreate";
+import ArtistEdit from "@/pages/Artists/ArtistEdit";
+import Users from "@/pages/User";
+import UserCreate from "@/pages/User/UserCreate";
+import UserEdit from "@/pages/User/UserEdit";
 
 export const router = createBrowserRouter([
     {
@@ -24,8 +32,36 @@ export const router = createBrowserRouter([
                     element: <Dashboard />
                   },
                   {
-                    path: 'record/' ,
-                    element: <Record />
+                    path: 'users/' ,
+                    element: <Users />
+                  },
+                  {
+                    path: 'user/create' ,
+                    element: <UserCreate />
+                  },
+                  {
+                    path: 'user/edit/:id' ,
+                    element: <UserEdit />
+                  },
+                  {
+                    path: 'artists/' ,
+                    element: <Artist />
+                  },
+                  {
+                    path: 'artist/create' ,
+                    element: <ArtistCreate />
+                  },
+                  {
+                    path: 'artist/edit/:id' ,
+                    element: <ArtistEdit />
+                  },
+                  {
+                    path: 'Song/' ,
+                    element: <Song />
+                  },
+                  {
+                    path: 'song/create' ,
+                    element: <SongCreate />
                   }
                 ]
             },

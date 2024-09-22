@@ -29,8 +29,9 @@ const Login = () => {
             setLoading(true)
             const res = await AuthEndpoints.signIn(data)
             if(res.status == 200) {
-                const { token } = res.data.data
+                const { token, email, role } = res.data.data
                 localStorage.setItem('_token', encodeBase64(token))
+                localStorage.setItem('_info', encodeBase64(JSON.stringify({ email, role })))
 
                 navigate('/', { replace: true , state: {  toastMessage: res.data.message } })
             }

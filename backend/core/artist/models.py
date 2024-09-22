@@ -18,7 +18,6 @@ class Artist(BaseModel):
         db_table = 'artist'
 
 
-
 class Song(BaseModel):
     class GenreChoices(Enum):
         RNB = 'rnb'
@@ -26,7 +25,6 @@ class Song(BaseModel):
         CLASSIC = 'classic'
         ROCK = 'rock'
         JAZZ = 'jazz'
-        
         @classmethod
         def has_key(cls, name):
             return name in cls.__members__

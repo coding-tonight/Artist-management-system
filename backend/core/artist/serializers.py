@@ -38,7 +38,7 @@ class ArtistSerializer(serializers.Serializer):
         gender_key = data.get('gender')
         if not GenderChoices.has_key(gender_key):
               raise serializers.ValidationError('Invalid gender option')
-        gender = GenderChoices[gender].value
+        gender = gender_key
         
         params = [name, data.get('dob'), gender, 
                   data.get('address'), data.get('first_release_year'),

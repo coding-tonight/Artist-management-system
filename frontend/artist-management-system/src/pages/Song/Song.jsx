@@ -1,13 +1,17 @@
 import React, { useState } from "react"
 
- import { Skeleton } from "@/components/ui/skeleton"
+import { Link } from "react-router-dom"
 
- import { ArtistEndpoints } from "@/config/endpoints"
- import { useFetch } from "@/hooks/useFetch"
- import { recordColumns as columns } from "@/lib/tableHeader"
- import { DataTable } from "@/components/custom"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 
-const Record = () => {
+
+import { ArtistEndpoints } from "@/config/endpoints"
+import { useFetch } from "@/hooks/useFetch"
+import { recordColumns as columns } from "@/lib/tableHeader"
+import { DataTable } from "@/components/custom"
+
+const Song = () => {
    const [pagination, setPagination] = useState({
       pageIndex: 0, //initial page index
       pageSize: 10, //default page size
@@ -27,6 +31,14 @@ const Record = () => {
 
      return (
         <section className="container mx-auto w-[80%] mt-5">
+         <div className="my-3">
+            <Button>
+               <Link to={'/song/create'}>
+                  Create
+               </Link>
+            </Button>
+         </div>
+
            <DataTable 
              columns={columns}  
              setPagination={setPagination}
@@ -44,4 +56,4 @@ const Record = () => {
      )
 }
 
-export  default Record
+export  default Song

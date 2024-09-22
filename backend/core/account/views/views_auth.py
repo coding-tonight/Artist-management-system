@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from django.views.decorators.debug import sensitive_post_parameters
 from django.utils.decorators import method_decorator
@@ -37,7 +36,9 @@ class LoginApiView(APIView):
             response = {
                 **LOGIN_MESSAGE_JSON,
                 'data': {
-                    'token': token.key
+                    'token': token.key,
+                    'email': token.user.email,
+                    'role': token.user.role
                 }
             }
             return Response(response, status=status.HTTP_200_OK)
