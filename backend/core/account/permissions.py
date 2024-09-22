@@ -11,7 +11,7 @@ class SuperAdminRole(permissions.BasePermission):
             return True
         
     def has_object_permission(self, request, view, obj):
-        if request.user.role == User.Role.SUPER_ADMIN:
+        if request.user.role == User.Role.SUPER_ADMIN.value:
             return True
         
         return False

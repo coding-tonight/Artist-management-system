@@ -21,7 +21,7 @@ import { artistSchema } from '@/lib/validations'
 
 
 
-const ArtistForm = ({ onSubmit, loading, formData }) => {    
+const ArtistForm = ({ onSubmit, loading, formData = {} }) => {    
     const { control, handleSubmit, reset,  formState: { errors }, } = useForm({
         resolver: zodResolver(artistSchema),
         defaultValues: formData

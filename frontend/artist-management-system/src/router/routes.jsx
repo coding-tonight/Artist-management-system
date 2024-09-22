@@ -18,6 +18,10 @@ import ArtistEdit from "@/pages/Artists/ArtistEdit";
 import Users from "@/pages/User";
 import UserCreate from "@/pages/User/UserCreate";
 import UserEdit from "@/pages/User/UserEdit";
+import SongEdit from "@/pages/Song/SongEdit";
+import ArtistWiseSong from "@/pages/Song/ArtistWiseSong";
+import NotFound from "@/pages/NotFound";
+import NoPermission from "@/pages/NoPermission";
 
 export const router = createBrowserRouter([
     {
@@ -56,12 +60,28 @@ export const router = createBrowserRouter([
                     element: <ArtistEdit />
                   },
                   {
+                    path: 'Song/:id' ,
+                    element: <ArtistWiseSong />
+                  },
+                  {
                     path: 'Song/' ,
                     element: <Song />
                   },
                   {
                     path: 'song/create' ,
                     element: <SongCreate />
+                  },
+                  {
+                    path: 'song/edit/:id' ,
+                    element: <SongEdit />
+                  },
+                  {
+                    path: '*' ,
+                    element: <NotFound />
+                  },
+                  {
+                    path: 'permission/denied' ,
+                    element: <NoPermission />
                   }
                 ]
             },

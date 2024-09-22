@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 import {  userSchema, userEditSchema } from '@/lib/validations'
 
-const UserForm = ({ onSubmit , loading , formData }) => {
+const UserForm = ({ onSubmit , loading , formData = {}}) => {
     const { register ,handleSubmit ,control , reset, formState: { errors }, } = useForm({
         resolver: zodResolver(Object.values(formData).length ? userEditSchema: userSchema),
         defaultValues: formData,
@@ -140,9 +140,9 @@ const UserForm = ({ onSubmit , loading , formData }) => {
                             <SelectValue placeholder="Select Role" />
                             </SelectTrigger>
                             <SelectContent>
-                            <SelectItem value="SUPER_ADMIN">SUPER ADMIN</SelectItem>
-                            <SelectItem value="ARTIST_MANAGER">ARTIST MANAGER</SelectItem>
-                            <SelectItem value="ARTIST">ARTIST</SelectItem>
+                            <SelectItem value="super_admin">SUPER ADMIN</SelectItem>
+                            <SelectItem value="artist_manager">ARTIST MANAGER</SelectItem>
+                            <SelectItem value="artist">ARTIST</SelectItem>
                             </SelectContent>
                         </Select>
                         )}

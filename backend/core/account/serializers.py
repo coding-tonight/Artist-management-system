@@ -70,9 +70,9 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class UserSerializer(RegisterSerializer):
-     role = serializers.CharField()
-     
-     def validate(self, data):
+      role = serializers.CharField()
+      
+      def validate(self, data):
          
           pk = self.context.get('pk')
           if pk:
@@ -104,11 +104,11 @@ class UserSerializer(RegisterSerializer):
           if pk:
               params = [email, data.get('first_name'),
                 data.get('last_name'), data.get('phone'), gender,
-                data.get('dob'), role, data.get('address'), False , datetime.now()]
+                data.get('dob'), role, data.get('address') , datetime.now()]
           else:
             params = [email, password, data.get('first_name'),
                 data.get('last_name'), data.get('phone'), gender,
-                data.get('dob'), role, data.get('address') , datetime.now()]
+                data.get('dob'), role, data.get('address') , False, datetime.now()]
  
           return params
       

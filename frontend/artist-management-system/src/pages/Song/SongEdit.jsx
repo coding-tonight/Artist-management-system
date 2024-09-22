@@ -1,26 +1,31 @@
 import React, { useState } from "react"
 
-import SongForm from "./Form/SongForm"
+import { useNavigate, useParams } from "react-router-dom"
+
 
 import { toast } from 'sonner'
+import { Skeleton } from "@/components/ui/skeleton"
 
+import SongForm from "./Form/SongForm"
 import { SongEndpoints } from "@/config/endpoints"
+import { useFetch } from "@/hooks/useFetch"
 
 
-const SongCreate = () => {
+const SongEdit = () => {
   const [loading, setLoading] = useState(false)
+
+  const { id } = useParams()
+  const navigate = useNavigate()
+
+  const { data, isSuccess, loading: preLoading } = useFetch(SongEndpoints.getSongWithId, id, null)
+
   const onSubmit = async (data, reset) => {
     console.log(data)
     try {
       setLoading(true)
-      const res = await SongEndpoints.createSong(data)
+      const res = await SongEndpoints.updateSong(data, id)
       toast.success(res.data.message)
-      reset({
-        title: '',
-        artist: '',
-        album_name: '',
-        genre: '',
-      })
+      navigate('/')
     } catch (error) {
 
       if(error.response.status == 400) {
@@ -39,11 +44,21 @@ const SongCreate = () => {
     }
   }
 
+  if(preLoading) {
+    return (
+      <section className="container mx-auto w-[80%] mt-5">
+          <Skeleton className="w-[400px] h-[200px]">
+            <Skeleton className="h-10 w-[100%]" />
+         </Skeleton>
+       </section>
+    )
+   }
+
      return (
         <section className="container mx-auto w-[80%] mt-5">
-          <SongForm onSubmit={onSubmit} loading={loading} />
+          <SongForm onSubmit={onSubmit} loading={loading} formData={ isSuccess ? data.data: {}} />
         </section>
      )
 }
 
-export default SongCreate
+export default SongEdit

@@ -27,7 +27,7 @@ class Song(BaseModel):
         JAZZ = 'jazz'
         @classmethod
         def has_key(cls, name):
-            return name in cls.__members__
+            return name in cls.__members__.values().__str__()
 
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="artist")
     title = models.CharField(max_length=45)

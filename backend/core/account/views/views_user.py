@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import  IsAuthenticated
 from rest_framework.exceptions import APIException, NotFound
+from rest_framework.authtoken.models import Token
 from rest_framework import status
 
-from account.permissions import  SuperAdminRole, ArtistManagerRole, ArtistRole
+from account.permissions import  SuperAdminRole
 from core.common.db_connection import insert_query_to_db, fetch_data_from_db
 from account.serializers import UserSerializer
 from core.views import APIViewResponseMixin
@@ -34,9 +35,12 @@ class UserApiView(generics.ListCreateAPIView, APIViewResponseMixin):
             page_number = request.query_params.get('page') or 1
             
             query = '''SELECT 
-                          CONCAT(first_name,'  ', last_name) as name , 
-                          email, phone, dob, address, role, gender  
-                          
+                          id, CONCAT(first_name,'  ', last_name) as name ,
+                          email, phone, dob, address, role, gender  , 
+                          ROW_NUMBER () OVER (
+                            ORDER BY 
+                             id
+                          ) 
                             FROM account_user  WHERE id != %s
                         ORDER BY  id, first_name
                         LIMIT %s OFFSET %s 
@@ -47,6 +51,7 @@ class UserApiView(generics.ListCreateAPIView, APIViewResponseMixin):
             return Response({'message': 'success',
                             'total_page': total_page,
                             'total': total,
+                            'current_total': len(data),
                             'current_page': page_number, 'data': data }, status=status.HTTP_200_OK)
             
         except APIException as exe:
@@ -97,12 +102,12 @@ class UserEditApiView(APIView, APIViewResponseMixin):
         except APIException as exe:
             return self.failure_response(exe=exe)
      
-     def put(self, request, pk, format=None):
+     def patch(self, request, pk, format=None):
         try:
             if not request.body:
                return Response(BODY_NOT_BLANK_JSON, status=status.HTTP_400_BAD_REQUEST)
                 
-            serializer = UserSerializer(data=request.data, context={ 'pk': pk })
+            serializer = UserSerializer(data=request.data, context={ 'pk': pk }, partial=True)
             serializer.is_valid(raise_exception=True)
             params = serializer.validated_data
 
@@ -121,21 +126,24 @@ class UserEditApiView(APIView, APIViewResponseMixin):
                     '''
 
             insert_query_to_db(query, [*params, pk])
-            return Response({'message': 'Successfully updated.'}, status=status.HTTP_200_OK)
+            return self.success_response(message="Successfully updated.")
         
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe, data=serializer.errors)
     
      def delete(self, request, pk, format=None):
         try:
+            # if there token token then delete token 
+            token_exists = Token.objects.filter(user=pk)
+            if token_exists.exists():
+                token_exists.delete()
+                
             query = 'DELETE FROM account_user WHERE id = %s'
             insert_query_to_db(query, [pk])
             return Response({'message': 'success'}, status=status.HTTP_200_OK)
         
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe)
         
         
     

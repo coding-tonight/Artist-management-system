@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework import status
 
@@ -18,7 +19,7 @@ from core.common.db_connection import insert_query_to_db
 
 logger = logging.getLogger('django')
 
-__all__ = ['LoginApiView', 'RegisterApiView']
+__all__ = ['LoginApiView', 'RegisterApiView', 'LogoutApiView']
 
 @method_decorator(sensitive_post_parameters('password'), name="dispatch")
 class LoginApiView(APIView):
@@ -53,12 +54,16 @@ class LoginApiView(APIView):
         
 
 class LogoutApiView(APIView):
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
     
-    def post(self, request, format=None):
-        request.user.auth.token.delete()
-        return Response(status=status.HTTP_200_OK)
+    def delete(self, request, format=None):
+        try:
+            request.user.auth.token.delete()
+            return Response(status=status.HTTP_200_OK)
+        
+        except APIException as exe:
+            return self.finalize_response(exe=exe)
     
     
 

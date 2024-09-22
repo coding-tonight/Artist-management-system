@@ -1,5 +1,6 @@
 import { useToken } from "@/hooks";
 import axios from "axios";
+// import { toast } from "sonner";
 
 
 export const API = axios.create({
@@ -24,7 +25,11 @@ API.interceptors.request.use((config) => {
 
 
 API.interceptors.response.use((response) => {
-return response;
+ return response;
 }, (error) =>  {
+  if (error.response.status === 403) {
+    window.location.href = '/permission/denied'
+    // toast.error('Your do not have permission perform this task')
+  }
 return Promise.reject(error);
 });

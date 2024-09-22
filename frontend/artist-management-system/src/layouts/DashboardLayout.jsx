@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import { Toaster } from '@/components/ui/sonner'
 import { Navbar, Sidebar } from '@/components/custom'
 
-
 const DashboardLayout = () => {
     const location = useLocation()
 

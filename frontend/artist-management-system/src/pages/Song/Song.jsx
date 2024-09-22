@@ -6,10 +6,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 
 
-import { ArtistEndpoints } from "@/config/endpoints"
+import { SongEndpoints } from "@/config/endpoints"
 import { useFetch } from "@/hooks/useFetch"
 import { recordColumns as columns } from "@/lib/tableHeader"
 import { DataTable } from "@/components/custom"
+
+import { Edit } from "lucide-react"
+import { ConfirmModal } from "@/components/custom/ConfirmModal"
+import { handleDelete } from "@/config/request"
 
 const Song = () => {
    const [pagination, setPagination] = useState({
@@ -17,7 +21,7 @@ const Song = () => {
       pageSize: 10, //default page size
      });
 
-   const { data, loading, isSuccess } = useFetch(ArtistEndpoints.getArtistRecord, 8, pagination.pageIndex + 1 <= 0? 1: pagination.pageIndex + 1)
+   const { data, loading, isSuccess , shouldRefresh } = useFetch(SongEndpoints.getSongs, null, pagination.pageIndex + 1 <= 0? 1: pagination.pageIndex + 1)
 
    if(loading) {
     return (
@@ -40,16 +44,38 @@ const Song = () => {
          </div>
 
            <DataTable 
-             columns={columns}  
+             columns={[...columns,
+               {
+                  accessorKey: "artist",
+                  header: "Artist",
+               }, 
+              { 
+               accessorKey: "action",
+               header: "Action",
+               cell: ({ row }) => {
+            
+                 return (
+                   <>
+                    <div className="flex">
+                    <Link to={`/song/edit/${row.original.id}`}>
+                       <Edit className="h-[20px] text-blue-400 cursor-pointer" />
+                     </Link>
+                     <ConfirmModal onConfirm={() => handleDelete(SongEndpoints.delete, row.original.id, () => {}, shouldRefresh)} />
+                    </div>
+                   </>
+                 )
+               },
+             },]}  
              setPagination={setPagination}
              pagination={pagination}
              totalPage={isSuccess ? data.total_page: 0}
-             data={isSuccess ? data.data.map((record, index) => {
+             data={isSuccess ? data.data.map((song) => {
                return {
-                  id: record.id,
-                  index: index + 1,
-                  record: record.title,
-                  album: record.album_name,
+                  id: song.id,
+                  index: song.row_number,
+                  record: song.title,
+                  album: song.album_name,
+                  artist: song.artist,
                }
            }): []} />
         </section>

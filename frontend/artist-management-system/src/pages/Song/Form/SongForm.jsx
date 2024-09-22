@@ -1,5 +1,7 @@
 import React from "react"
 
+import PropTypes from 'prop-types'
+
 import { useForm, Controller } from "react-hook-form"
 
 import {
@@ -36,21 +38,26 @@ import { Button } from "@/components/ui/button"
 
 import { useFetch } from "@/hooks/useFetch"
 import { ArtistEndpoints } from "@/config/endpoints"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { songSchema } from '@/lib/validations'
 
-const  SongForm = (onSubmit) => {    
-    const { control, handleSubmit } = useForm()
+const  SongForm = ({ onSubmit, loading, formData = {}}) => {    
+    const { control, handleSubmit, reset,  formState: { errors }, } = useForm({
+        resolver: zodResolver(songSchema),
+        defaultValues: formData 
+    })
     
     const { data: artists, isSuccess } = useFetch(ArtistEndpoints.getArtistsListWithoutPagination, null, null)
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-[400px]">
+        <form onSubmit={handleSubmit((data) => onSubmit(data, reset))} className="w-[400px]">
             <div className="flex flex-col space-y-1.5 my-2">
-                <Label htmlFor="email">Artist</Label>
+                <Label htmlFor="artist">Artist</Label>
                    <Controller
                     name="artist"
                     control={control}
                     defaultValue=""
-                    rules={{ required: "genre is required" }}
+                    rules={{ required: "Artist is required" }}
                     render={({ field }) => (
                     <Popover>
                         <PopoverTrigger asChild>
@@ -62,10 +69,10 @@ const  SongForm = (onSubmit) => {
                                 !field.value && "text-muted-foreground"
                             )}
                             >
-                            {field.value 
+                            {isSuccess && field.value 
                                 ? artists?.data.find(
                                     (artist) => artist.id === field.value
-                                )?.name ?? field.value
+                                )?.name
                                 : "Select artist"}
                               <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -83,7 +90,7 @@ const  SongForm = (onSubmit) => {
                                 <CommandItem
                                     value={artist.id}
                                     key={artist.id}
-                                    onSelect={field.onChange}
+                                    onSelect={() => field.onChange(artist.id)}
                                 >
                                     {artist.name}
                                     <CheckIcon
@@ -103,28 +110,33 @@ const  SongForm = (onSubmit) => {
                     </Popover>
                 )}
                 />
+                {errors.artist && <p className="text-red-500 text-xs">{errors.artist.message}</p>}
             </div>
 
             <div className="flex flex-col space-y-1.5 my-2">
                 <Label htmlFor="email">Title</Label>
                 <Controller
                 name="title"
+                defaultValue=""
                 control={control}
                 render={({ field }) => <Input {...field} placeholder="Title" />}
                 />
+                {errors.title && <p className="text-red-500 text-xs">{errors.title.message}</p>}
             </div>
 
             <div className="flex flex-col space-y-1.5 my-2">
                 <Label htmlFor="email">Album</Label>
                 <Controller
                 name="album_name"
+                defaultValue=""
                 control={control}
                 render={({ field }) => <Input {...field} placeholder="Album Name" />}
                 />
+                {errors.album_name && <p className="text-red-500 text-xs">{errors.album_name.message}</p>}
             </div>
 
             <div className="flex flex-col space-y-1.5 my-2">
-                <Label htmlFor="email">Album</Label>
+                <Label htmlFor="email">Genre</Label>
                 <Controller
                 name="genre"
                 control={control}
@@ -148,9 +160,22 @@ const  SongForm = (onSubmit) => {
             />
             </div>
 
-        <Button>Create</Button>
+            <div className="flex gap-2">
+            {Object.values(formData).length ? (
+              <Button>{loading ? 'loading': 'Update'}</Button>
+            ): (
+              <Button>{loading ? 'loading': 'Create'}</Button>
+            )}
+            <Button variant="secondary" type="button">Back</Button>
+           </div>
       </form>
     )
+}
+
+SongForm.propTypes = {
+  onSubmit: PropTypes.func,
+  loading: PropTypes.bool,
+  formData: PropTypes.object
 }
 
 export default SongForm

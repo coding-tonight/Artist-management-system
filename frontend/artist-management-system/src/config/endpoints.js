@@ -26,7 +26,10 @@ const ArtistEndpoints = {
         return API.get('artist/')
     },
     getArtistRecord: (page, id) => {
-        return API.get(`artist/record/${id}/?page=${page}`)
+        return API.get(`artist/song/${id}/?page=${page}`)
+    },
+    delete: (id) => {
+        return API.delete(`artist/${id}/`)
     }
 }
 
@@ -38,11 +41,32 @@ const UserEndpoints = {
         return API.post(`user/`, data)
     },
     updateUser: (data, id) => {
-        return API.put(`user/${id}/`, data)
+        return API.patch(`user/${id}/`, data)
     },
     getUserWithId: (_, id) => {
         return API.get(`user/${id}/`)
     },
+    delete: (id) => {
+        return API.delete(`user/${id}/`)
+    }
 }
 
-export { AuthEndpoints, ArtistEndpoints, UserEndpoints }
+const SongEndpoints = {
+    getSongs: (page) => {
+      return API.get(`song/?page=${page}`)
+    },
+    getSongWithId: (_, id) => {
+        return API.get(`song/${id}/`,)
+      },
+    createSong: (data) => {
+      return API.post('song/', data)
+    },
+    updateSong: (data, id) => {
+        return API.put(`song/${id}/`, data)
+    },
+    delete: (id) => {
+         return API.delete(`song/${id}/`)
+    }
+}
+
+export { AuthEndpoints, ArtistEndpoints, UserEndpoints, SongEndpoints }

@@ -49,7 +49,7 @@ class ArtistSerializer(serializers.Serializer):
 
 class SongSerializer(serializers.Serializer):
     id = serializers.PrimaryKeyRelatedField(read_only=True)
-    artist = ArtistSerializer() 
+    artist = serializers.CharField()
     title = serializers.CharField()
     album_name = serializers.CharField()
     genre =serializers.CharField()
@@ -63,13 +63,14 @@ class SongSerializer(serializers.Serializer):
             if not Song.objects.filter(id=pk).exists():
                 raise NotFound('Artist does not exists')
             
-            if Song.objects.filter(name__iexact=title).exclude(id=pk).exists():
+            if Song.objects.filter(title__iexact=title).exclude(id=pk).exists():
                 raise serializers.ValidationError(f'{title} title is already taken.')
             
             if Song.objects.filter(album_name__iexact=album_name).exclude(id=pk).exists():
                 raise serializers.ValidationError(f"{album_name} album name is already taken")
         else:
-            if Song.objects.filter(name__iexact=title).exists():
+            if Song.objects.filter(title__iexact=title).exists():
+                print('hello')
                 raise serializers.ValidationError(f'{album_name} album name is already taken.')
             
         
@@ -80,7 +81,7 @@ class SongSerializer(serializers.Serializer):
         genre_key  = data.get('genre')
         if not Song.GenreChoices.has_key(genre_key):
             raise serializers.ValidationError('Invalid genre')
-        genre = Song.GenreChoices[genre_key].value
+        genre = genre_key
         
         params = [title, artist, album_name, genre, datetime.now()]
         

@@ -1,27 +1,31 @@
 import React, { useState } from "react"
 
+import { useParams } from "react-router-dom"
+
 import { Link } from "react-router-dom"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 
 
-import { UserEndpoints } from "@/config/endpoints"
+import { ArtistEndpoints, SongEndpoints } from "@/config/endpoints"
 import { useFetch } from "@/hooks/useFetch"
-import { userColumns as columns } from "@/lib/tableHeader"
+import { recordColumns as columns } from "@/lib/tableHeader"
 import { DataTable } from "@/components/custom"
 
 import { Edit } from "lucide-react"
 import { ConfirmModal } from "@/components/custom/ConfirmModal"
 import { handleDelete } from "@/config/request"
 
-const Users = () => {
+const ArtistWiseSong = () => {
    const [pagination, setPagination] = useState({
       pageIndex: 0, //initial page index
       pageSize: 10, //default page size
      });
 
-   const { data, loading, isSuccess, shouldRefresh } = useFetch(UserEndpoints.getUser, null , pagination.pageIndex + 1 <= 0? 1: pagination.pageIndex + 1)
+     const { id } = useParams(0)
+
+   const { data, loading, isSuccess , shouldRefresh } = useFetch(ArtistEndpoints.getArtistRecord, id, pagination.pageIndex + 1 <= 0? 1: pagination.pageIndex + 1)
 
    if(loading) {
     return (
@@ -37,7 +41,7 @@ const Users = () => {
         <section className="container mx-auto w-[80%] mt-5">
          <div className="my-3">
             <Button>
-               <Link to={'/user/create'}>
+               <Link to={'/song/create'}>
                   Create
                </Link>
             </Button>
@@ -48,13 +52,14 @@ const Users = () => {
                accessorKey: "action",
                header: "Action",
                cell: ({ row }) => {
+            
                  return (
                    <>
                     <div className="flex">
-                     <Link to={`/user/edit/${row.original.id}`}>
+                    <Link to={`/song/edit/${row.original.id}`}>
                        <Edit className="h-[20px] text-blue-400 cursor-pointer" />
                      </Link>
-                     <ConfirmModal onConfirm={() => handleDelete(UserEndpoints.delete, row.original.id, () => {}, shouldRefresh)} />
+                     <ConfirmModal onConfirm={() => handleDelete(SongEndpoints.delete, row.original.id, () => {}, shouldRefresh)} />
                     </div>
                    </>
                  )
@@ -63,21 +68,16 @@ const Users = () => {
              setPagination={setPagination}
              pagination={pagination}
              totalPage={isSuccess ? data.total_page: 0}
-             data={isSuccess ? data.data.map((user) => {
+             data={isSuccess ? data.data.map((song) => {
                return {
-                  id: user.id,
-                  index: user.row_number,
-                  name: user.name,
-                  email: user.email,
-                  dob: user.dob,
-                  gender: user.gender,
-                  address: user.address,
-                  role: user.role,
-                  phone: user.phone 
+                  id: song.id,
+                  index: song.row_number,
+                  record: song.title,
+                  album: song.album_name,
                }
            }): []} />
         </section>
      )
 }
 
-export  default Users
+export  default ArtistWiseSong

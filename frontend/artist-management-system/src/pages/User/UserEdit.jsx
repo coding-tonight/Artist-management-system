@@ -16,22 +16,12 @@ const UserEdit = () => {
 
      const { data, isSuccess, loading: preLoading } = useFetch(UserEndpoints.getUserWithId, id, null)
 
-     const onSubmit = async (data, reset) => {
+     const onSubmit = async (data, _) => {
           try {
             setLoading(true)
             const res = await UserEndpoints.updateUser(data, id)
             toast.success(res.data.message)
-            reset({
-              email: '',
-              first_name: '',
-              last_name: '',
-              address: '',
-              phone: '',
-              gender: '',
-              role: '',
-              password: '',
-              confirm_password: ''
-            })
+            navigate('/users/', { replace: true })
           } catch (error) {
 
             if(error.response.status == 400) {
