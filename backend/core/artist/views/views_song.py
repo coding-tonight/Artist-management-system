@@ -95,7 +95,7 @@ class SongApiView(APIView, APIViewResponseMixin):
         
         except APIException as exe:
             logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe, data=serializer.errors)
         
      
     def delete(self, request, pk, format=None):
@@ -105,10 +105,9 @@ class SongApiView(APIView, APIViewResponseMixin):
             return Response({'message': 'success'}, status=status.HTTP_200_OK)
         
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe)
                        
-class ArtistSongApiView(generics.ListAPIView):
+class ArtistSongApiView(generics.ListAPIView, APIViewResponseMixin):
     permission_classes = [SuperAdminRole | ArtistRole | ArtistManagerRole, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
     pagination_class = RawQueriesPagination
@@ -134,8 +133,7 @@ class ArtistSongApiView(generics.ListAPIView):
                             'current_page': page_number, 'data': data }, status=status.HTTP_200_OK)
             
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe)
+            return self.failure_response(exe=exe)
         
 
          
@@ -190,9 +188,8 @@ class ArtistSongEditApiView(APIView, APIViewResponseMixin):
         try:
             query = 'DELETE FROM song WHERE id = %s'
             insert_query_to_db(query, [pk])
-            return Response({'message': 'success'}, status=status.HTTP_200_OK)
+            return self.success_response(message="Successfully Deleted")
         
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe)
          

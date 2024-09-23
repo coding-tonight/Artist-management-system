@@ -123,11 +123,10 @@ class ArtistUpdateApiView(APIView, APIViewResponseMixin):
                     '''
 
             insert_query_to_db(query, [*params, pk])
-            return Response({'message': 'Successfully updated.'}, status=status.HTTP_200_OK)
+            return self.success_response(message="Successfully updated")
         
         except APIException as exe:
-            logger.error(str(exe), exc_info=True)
-            raise APIException(exe.detail)
+            return self.failure_response(exe=exe, data=serializer.errors)
     
     def delete(self, request, pk, format=None):
         try:
