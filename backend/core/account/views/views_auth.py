@@ -12,6 +12,7 @@ from rest_framework.exceptions import APIException, ValidationError
 from rest_framework import status
 
 from account.serializers import LoginSerializer, RegisterSerializer
+from core.views import APIViewResponseMixin
 from core.common.globalResponses import LOGIN_MESSAGE_JSON, BODY_NOT_BLANK_JSON
 from core.common.db_connection import insert_query_to_db
 
@@ -53,17 +54,17 @@ class LoginApiView(APIView):
             raise APIException(exe.detail)
         
 
-class LogoutApiView(APIView):
+class LogoutApiView(APIView, APIViewResponseMixin):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
     
     def delete(self, request, format=None):
         try:
             request.user.auth.token.delete()
-            return Response(status=status.HTTP_200_OK)
+            return self.success_response(message="Logout Successfully")
         
         except APIException as exe:
-            return self.finalize_response(exe=exe)
+            return self.failure_response(exe=exe)
     
     
 
